@@ -12,6 +12,7 @@ const [itemName,setItemName] = useState('');
        const [quantity,setQuantity] = useState('');
        const [costPrice,setCostPrice] = useState('');
        const [sellingPrice,setSellingPrice] = useState('');
+       const [wholesale, setWholesale] = useState('');
        const [fieldEmpty,setFieldEmpty] = useState(false);
        const [greaterCostPrice,setGreaterCostPrice] = useState(false);
        const [itemExists,setItemExists] = useState(false);
@@ -27,9 +28,10 @@ const {data:item, isPending: isLoading, error} = useFetch('http://localhost:7600
      setCostPrice(item.costPrice);
      setSellingPrice(item.sellingPrice);
      setItemName(item.itemName);
+     setWholesale(item.wholesale);
       }
 },[item]) 
-const handleRemove = () =>{
+const handleRemove = () => {
 
     fetch('http://localhost:7600/items/'+item.id,{
         method: 'DELETE'
@@ -42,7 +44,7 @@ const handleRemove = () =>{
 const handleSubmit = (e) =>{
     e.preventDefault();
     let searchCounter = 0;
-    if((itemName === '')||(quantity === '')||(costPrice === '')||(sellingPrice === ''))
+    if((itemName === '')||(quantity === '')||(costPrice === '')||(sellingPrice === '')||(wholesale === ''))
     {
          setFieldEmpty(true);
          setItemExists(false);
@@ -54,19 +56,15 @@ const handleSubmit = (e) =>{
     else
     {
    
-       if((quantity < 0) || (costPrice < 0) || (sellingPrice < 0))
+       if((quantity < 0) || (costPrice < 0) || (sellingPrice < 0)||(wholesale < 0))
        {
        setInvalidNumber(true);
        setItemExists(false);
        setFieldEmpty(false);
        setGreaterCostPrice(false);
        setSuccess(false);
-
-
-
-
        }
-       else if(Number(costPrice) > Number(sellingPrice))
+       else if((Number(costPrice) > Number(sellingPrice))||(Number(wholesale) < Number(costPrice)) || (Number(wholesale) > Number(sellingPrice)))
        {
            setGreaterCostPrice(true);
            setInvalidNumber(false);
@@ -77,7 +75,7 @@ const handleSubmit = (e) =>{
        }
        else
        {
-           const newItems = {itemName,quantity,costPrice,sellingPrice};
+           const newItems = {itemName,quantity,costPrice,sellingPrice,wholesale};
            fetch('http://localhost:7600/items/'+item.id,{
                method: "PUT",
                headers: {"Content-type": "Application/json"},
@@ -106,7 +104,7 @@ return(
             {success && <p className = "add-success">New item added successfully</p>}
             {invalidNumber && <p className = "error-message">Negative number detected.</p>}
             {fieldEmpty && <p className = "error-message">All fields required</p>}
-            {greaterCostPrice && <p className = "error-message">Cost price is greater than selling price.</p>}
+            {greaterCostPrice && <p className = "error-message">Prices mismatch detected. Check prices</p>}
             {itemExists && <p className = "error-message">Item already exists</p>}
             <label>Item Name</label>
             <input onChange = {(e)=>setItemName(e.target.value)} type = "text" value = {itemName}  required/>
@@ -114,7 +112,9 @@ return(
             <input onChange = {(e)=>setQuantity(e.target.value)} type = "number" value = {quantity}  required/>
             <label>Cost Price</label>
             <input onChange = {(e)=>setCostPrice(e.target.value)} type = "number" value = {costPrice}  required/>
-            <label>Selling Price</label>
+            <label>Wholesale Price</label>
+            <input type = "number" onChange = {(e)=>setWholesale(e.target.value)} value = {wholesale} required/>
+            <label>Retail Price</label>
             <input onChange = {(e)=>setSellingPrice(e.target.value)} type = "number" value = {sellingPrice} required/>
               
             

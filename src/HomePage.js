@@ -131,13 +131,13 @@ const HomePage = () =>{
              if(wholeBox === true)
              {
                 
-                totalCost = Number(wholesale) * bought;  
-                console.log("Total Whole Cost"+totalCost);
+                totalCost += Number(wholesale);  
+
              }
              else{
                 
-                 totalCost = Number(sellingPrice) * bought;
-                 console.log("TotalCost"+totalCost)
+                 totalCost += Number(sellingPrice);
+        
                 }
         
         
@@ -232,13 +232,13 @@ const HomePage = () =>{
                                 rct.quantityRemain = rct.quantityRemain - 1;
                                 if(wholeBox === true)
                                  {
-                                    rct.totalCost = rct.wholesale * rct.bought;
+                                    rct.totalCost += rct.wholesale;
                                     
 
                                  }
                                  else
                                  {
-                                rct.totalCost = rct.sellingPrice * rct.bought;
+                                rct.totalCost += rct.sellingPrice;
 
                                  }
                                 Store.addLocalStorage('recordCart',recordCart);
